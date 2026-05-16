@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources\ServiceCategory\Pages;
 
+use App\Models\ServiceCategory;
 use App\MoonShine\Resources\ServiceCategory\ServiceCategoryResource;
 use MoonShine\Contracts\UI\FieldContract;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Pages\Crud\DetailPage;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\ID;
@@ -26,6 +28,12 @@ class ServiceCategoryDetailPage extends DetailPage
     {
         return [
             ID::make(),
+            BelongsTo::make(
+                'Родительская категория',
+                'parent',
+                formatted: static fn (?ServiceCategory $model): string => $model?->name ?? '',
+                resource: ServiceCategoryResource::class,
+            ),
             Text::make('Название', 'name'),
             Text::make('Slug', 'slug'),
             Textarea::make('Описание', 'description'),

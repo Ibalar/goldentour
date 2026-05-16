@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources\ServiceCategory\Pages;
 
+use App\Models\ServiceCategory;
 use App\MoonShine\Resources\ServiceCategory\ServiceCategoryResource;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use MoonShine\Contracts\Core\TypeCasts\DataWrapperContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Contracts\UI\FieldContract;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Fields\Slug;
 use MoonShine\Laravel\Pages\Crud\FormPage;
 use MoonShine\UI\Components\Layout\Box;
@@ -31,6 +34,14 @@ class ServiceCategoryFormPage extends FormPage
         return [
             Box::make([
                 ID::make(),
+                BelongsTo::make(
+                    'Родительская категория',
+                    'parent',
+                    formatted: static fn (?ServiceCategory $model): string => $model?->name ?? '',
+                    resource: ServiceCategoryResource::class,
+                )
+                    ->nullable()
+                    ->valuesQuery(static fn (Builder $q): Builder => $q->select(['id', 'name'])),
                 Text::make('Название', 'name')
                     ->when(
                         fn () => $this->getResource()->isCreateFormPage(),
@@ -57,6 +68,7 @@ class ServiceCategoryFormPage extends FormPage
     protected function rules(DataWrapperContract $item): array
     {
         return [
+            'parent_id' => ['nullable', 'integer', 'exists:service_categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => [
                 'required',

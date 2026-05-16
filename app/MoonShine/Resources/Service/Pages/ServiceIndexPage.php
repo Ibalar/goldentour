@@ -41,6 +41,7 @@ class ServiceIndexPage extends IndexPage
             Number::make('Цена от', 'price_from')->sortable(),
             Number::make('Цена до', 'price_to')->sortable(),
             Switcher::make('Активна', 'is_active')->sortable(),
+            Switcher::make('В меню', 'show_in_menu')->sortable(),
         ];
     }
 
@@ -56,6 +57,7 @@ class ServiceIndexPage extends IndexPage
             Text::make('Название', 'name'),
             Text::make('Slug', 'slug'),
             Switcher::make('Активна', 'is_active'),
+            Switcher::make('В меню', 'show_in_menu'),
         ];
     }
 

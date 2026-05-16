@@ -28,9 +28,27 @@ class Service extends Model
         'gallery',
         'features',
         'is_active',
+        'show_in_menu',
         'meta_title',
         'meta_description',
         'meta_keywords',
+        // Блок "Почему выбирают"
+        'why_choose_title',
+        'why_choose_subtitle',
+        'why_choose_items',
+        // Блок "Что входит"
+        'offer_title',
+        'offer_subtitle',
+        'offer_list',
+        'offer_items',
+        // Блок "Процесс работы"
+        'process_title',
+        'process_subtitle',
+        'process_items',
+        'process_image',
+        // Блок FAQ
+        'faq_title',
+        'faq_items',
     ];
 
     protected $casts = [
@@ -41,6 +59,12 @@ class Service extends Model
         'features' => 'array',
         'gallery' => 'array',
         'is_active' => 'boolean',
+        'show_in_menu' => 'boolean',
+        'why_choose_items' => 'array',
+        'offer_list' => 'array',
+        'offer_items' => 'array',
+        'process_items' => 'array',
+        'faq_items' => 'array',
     ];
 
     public function category(): BelongsTo
@@ -66,5 +90,10 @@ class Service extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeShowInMenu($query)
+    {
+        return $query->where('show_in_menu', true);
     }
 }

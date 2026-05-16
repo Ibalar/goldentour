@@ -15,6 +15,8 @@ use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Pages\Crud\FormPage;
 use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Components\Tabs;
+use MoonShine\UI\Components\Tabs\Tab;
 use MoonShine\UI\Fields\ID;
 use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Json;
@@ -61,8 +63,79 @@ class ServiceFormPage extends FormPage
                 Json::make('Галерея', 'gallery')->onlyValue('Изображение')->nullable(),
                 Json::make('Особенности', 'features')->onlyValue('Особенность')->nullable(),
                 Switcher::make('Активна', 'is_active')->default(true),
+                Switcher::make('Показывать в меню', 'show_in_menu')->default(false),
                 Text::make('Meta title', 'meta_title')->nullable(),
                 Textarea::make('Meta description', 'meta_description')->nullable(),
+            ]),
+
+            Tabs::make([
+                Tab::make('Почему выбирают', [
+                    Text::make('Заголовок', 'why_choose_title')->nullable(),
+                    Textarea::make('Подзаголовок', 'why_choose_subtitle')->nullable(),
+                    Json::make('Элементы', 'why_choose_items')
+                        ->fields([
+                            Text::make('Иконка', 'icon')->nullable(),
+                            Text::make('Заголовок', 'title'),
+                            Textarea::make('Описание', 'description'),
+                        ])
+                        ->creatable()
+                        ->removable()
+                        ->nullable(),
+                ]),
+
+                Tab::make('Что входит', [
+                    Text::make('Заголовок', 'offer_title')->nullable(),
+                    Textarea::make('Подзаголовок', 'offer_subtitle')->nullable(),
+                    Json::make('Список преимуществ', 'offer_list')
+                        ->onlyValue('Текст')
+                        ->creatable()
+                        ->removable()
+                        ->nullable(),
+                    Json::make('Блоки с изображениями', 'offer_items')
+                        ->fields([
+                            Image::make('Изображение', 'image')
+                                ->disk(moonshineConfig()->getDisk())
+                                ->dir('services/offers')
+                                ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                                ->nullable(),
+                            Text::make('Заголовок', 'title'),
+                            Textarea::make('Описание', 'description'),
+                        ])
+                        ->creatable()
+                        ->removable()
+                        ->nullable(),
+                ]),
+
+                Tab::make('Процесс работы', [
+                    Text::make('Заголовок', 'process_title')->nullable(),
+                    Textarea::make('Подзаголовок', 'process_subtitle')->nullable(),
+                    Json::make('Элементы процесса', 'process_items')
+                        ->fields([
+                            Text::make('Иконка', 'icon')->nullable(),
+                            Text::make('Заголовок', 'title'),
+                            Textarea::make('Описание', 'description'),
+                        ])
+                        ->creatable()
+                        ->removable()
+                        ->nullable(),
+                    Image::make('Изображение процесса', 'process_image')
+                        ->disk(moonshineConfig()->getDisk())
+                        ->dir('services/process')
+                        ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                        ->nullable(),
+                ]),
+
+                Tab::make('Что важно знать (FAQ)', [
+                    Text::make('Заголовок', 'faq_title')->nullable(),
+                    Json::make('Вопросы и ответы', 'faq_items')
+                        ->fields([
+                            Text::make('Вопрос', 'question'),
+                            Textarea::make('Ответ', 'answer'),
+                        ])
+                        ->creatable()
+                        ->removable()
+                        ->nullable(),
+                ]),
             ]),
         ];
     }
@@ -87,8 +160,22 @@ class ServiceFormPage extends FormPage
             'duration' => ['nullable', 'string', 'max:255'],
             'image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
             'is_active' => ['boolean'],
+            'show_in_menu' => ['boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string'],
+            'why_choose_title' => ['nullable', 'string', 'max:255'],
+            'why_choose_subtitle' => ['nullable', 'string'],
+            'why_choose_items' => ['nullable', 'array'],
+            'offer_title' => ['nullable', 'string', 'max:255'],
+            'offer_subtitle' => ['nullable', 'string'],
+            'offer_list' => ['nullable', 'array'],
+            'offer_items' => ['nullable', 'array'],
+            'process_title' => ['nullable', 'string', 'max:255'],
+            'process_subtitle' => ['nullable', 'string'],
+            'process_items' => ['nullable', 'array'],
+            'process_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
+            'faq_title' => ['nullable', 'string', 'max:255'],
+            'faq_items' => ['nullable', 'array'],
         ];
     }
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources\ServiceCategory\Pages;
 
+use App\Models\ServiceCategory;
 use App\MoonShine\Resources\ServiceCategory\ServiceCategoryResource;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Contracts\UI\FieldContract;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Pages\Crud\IndexPage;
 use MoonShine\UI\Components\Table\TableBuilder;
 use MoonShine\UI\Fields\ID;
@@ -26,6 +28,12 @@ class ServiceCategoryIndexPage extends IndexPage
     {
         return [
             ID::make()->sortable(),
+            BelongsTo::make(
+                'Родительская категория',
+                'parent',
+                formatted: static fn (?ServiceCategory $model): string => $model?->name ?? '',
+                resource: ServiceCategoryResource::class,
+            ),
             Text::make('Название', 'name')->sortable(),
             Text::make('Slug', 'slug')->sortable(),
             Text::make('Иконка', 'icon'),
