@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Favicons --}}
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/icons/favicon.svg') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/icons/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/icons/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/icons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('assets/icons/favicon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/icons/favicon-180x180.png') }}">
+    <meta name="msapplication-config" content="{{ asset('assets/icons/browserconfig.xml') }}">
+    <meta name="msapplication-TileImage" content="{{ asset('assets/icons/favicon-310x310.png') }}">
+    <meta name="msapplication-TileColor" content="#1a1a1a">
+    <meta name="theme-color" content="#1a1a1a">
+
     @php
         $metaTitle = trim($__env->yieldContent('meta_title')) ?: null;
         $metaDescription = trim($__env->yieldContent('meta_description')) ?: null;

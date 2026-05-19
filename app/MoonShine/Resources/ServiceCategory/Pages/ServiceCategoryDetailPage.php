@@ -11,6 +11,7 @@ use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Pages\Crud\DetailPage;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\ID;
+use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Number;
 use MoonShine\UI\Fields\Switcher;
 use MoonShine\UI\Fields\Text;
@@ -40,6 +41,8 @@ class ServiceCategoryDetailPage extends DetailPage
             Text::make('Иконка', 'icon'),
             Number::make('Сортировка', 'sort_order'),
             Switcher::make('Активна', 'is_active'),
+            Image::make('Фон хлебных крошек', 'breadcrumb_image')
+                ->disk(moonshineConfig()->getDisk()),
             Date::make('Создано', 'created_at')->format('d.m.Y H:i'),
             Date::make('Обновлено', 'updated_at')->format('d.m.Y H:i'),
         ];

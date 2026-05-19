@@ -15,10 +15,13 @@ class HomeController extends Controller
     public function index(): View
     {
         $services = Service::active()
+            ->showOnHome()
             ->with('category')
-            ->latest()
-            ->take(6)
+            ->orderBy('name')
+            ->take(8)
             ->get();
+
+        $servicesTotal = Service::active()->showOnHome()->count();
 
         $portfolio = Portfolio::active()
             ->featured()
@@ -54,6 +57,6 @@ class HomeController extends Controller
             'reviews' => Review::published()->count(),
         ];
 
-        return view('pages.home', compact('services', 'portfolio', 'reviews', 'categories', 'team', 'stats'));
+        return view('pages.home', compact('services', 'servicesTotal', 'portfolio', 'reviews', 'categories', 'team', 'stats'));
     }
 }

@@ -552,7 +552,6 @@ header.main-header .header-sticky.active{
 	font-size: 16px;
 	font-weight: 600;
 	line-height: 1.2em;
-	text-transform: capitalize;
 	color: var(--white-color);
 	padding: 12px 10px !important;
 	background: transparent;
@@ -586,7 +585,7 @@ header.main-header .header-sticky.active{
 	padding: 0;
 	margin: 0;
 	list-style: none;
-	width: 235px;
+	width: 265px;
 	border-radius: 10px;
 	position: absolute;
 	left: 0;
@@ -631,7 +630,7 @@ header.main-header .header-sticky.active{
 
 .main-menu ul ul li a:hover,
 .main-menu ul ul li a:focus{
-	color: var(--white-color);
+	color: var(--bs-primary);
 	background-color: transparent;
 	padding: 6px 20px 6px 23px !important;
 }
@@ -713,7 +712,6 @@ header.main-header .header-sticky.active{
 	position: relative;
 	font-size: 16px;
 	font-weight: 600;
-	text-transform: capitalize;
 	padding: 7px 20px;
 	color: var(--primary-color);
 	line-height: normal;
@@ -726,7 +724,7 @@ header.main-header .header-sticky.active{
 .slicknav_nav a:focus,
 .slicknav_nav .slicknav_row:hover{
 	background-color: transparent;
-	color: var(--white-color);
+	color: var(--bs-primary);
 }
 
 .slicknav_menu ul ul li a{
@@ -753,7 +751,6 @@ header.main-header .header-sticky.active{
 
 .slicknav_open > a .slicknav_arrow:after{
     transform: translateY(-50%) rotate(-180deg);
-	color: var(--white-color);
 }
 
 /************************************/
@@ -2158,7 +2155,7 @@ header.main-header .header-sticky.active{
 }
 
 .pricing-item.highlighted-box .pricing-item-header::before{
-	content: 'Most Popular';
+	content: 'Заполните';
 	font-family: var(--accent-font);
 	position: absolute;
 	top: 20px;
@@ -3202,6 +3199,10 @@ header.main-header .header-sticky.active{
 .footer-copyright-text p{
     color: var(--white-color);
     margin: 0;
+}
+
+.footer-copyright-text p a {
+    color: var(--accent-color);
 }
 
 /************************************/

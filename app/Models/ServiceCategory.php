@@ -21,6 +21,7 @@ class ServiceCategory extends Model
         'icon',
         'sort_order',
         'is_active',
+        'breadcrumb_image',
     ];
 
     protected $casts = [
@@ -51,5 +52,24 @@ class ServiceCategory extends Model
     public function activeChildren(): HasMany
     {
         return $this->children()->where('is_active', true);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Получить IDs всех дочерних категорий (включая текущую).
+     */
+    public function getAllDescendantIds(): array
+    {
+        $ids = [$this->id];
+
+        foreach ($this->children as $child) {
+            $ids = array_merge($ids, $child->getAllDescendantIds());
+        }
+
+        return $ids;
     }
 }

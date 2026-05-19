@@ -1,12 +1,25 @@
 @php
-    $menuServices = collect();
+    $menuCategories = collect();
     try {
-        $menuServices = \App\Models\Service::active()->showInMenu()->orderBy('name')->get();
+        $menuCategories = \App\Models\ServiceCategory::active()
+            ->whereNull('parent_id')
+            ->with([
+                'activeChildren' => fn ($q) => $q->orderBy('sort_order')->with([
+                    'activeChildren' => fn ($q) => $q->orderBy('sort_order')->with([
+                        'activeChildren' => fn ($q) => $q->orderBy('sort_order')->with([
+                            'activeServices' => fn ($q) => $q->orderBy('name'),
+                        ]),
+                        'activeServices' => fn ($q) => $q->orderBy('name'),
+                    ]),
+                    'activeServices' => fn ($q) => $q->orderBy('name'),
+                ]),
+                'activeServices' => fn ($q) => $q->orderBy('name'),
+            ])
+            ->orderBy('sort_order')
+            ->get();
     } catch (\Exception $e) {}
 
     $navItems = [
-        ['label' => 'Главная', 'route' => route('home'), 'active' => request()->routeIs('home')],
-        ['label' => 'Услуги', 'route' => route('services.index'), 'active' => request()->routeIs('services.*'), 'children' => $menuServices],
         ['label' => 'Портфолио', 'route' => route('portfolio.index'), 'active' => request()->routeIs('portfolio.*')],
         ['label' => 'О компании', 'route' => route('about'), 'active' => request()->routeIs('about')],
         ['label' => 'Контакты', 'route' => route('contacts'), 'active' => request()->routeIs('contacts')],
@@ -24,23 +37,32 @@
                 <div class="collapse navbar-collapse main-menu">
                     <div class="nav-menu-wrapper">
                         <ul class="navbar-nav mr-auto" id="menu">
+                            {{-- Главная --}}
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Главная</a>
+                            </li>
+
+                            {{-- Услуги с иерархией --}}
+                            @if($menuCategories->isNotEmpty())
+                                <li class="nav-item submenu">
+                                    <a class="nav-link {{ request()->routeIs('services.*') ? 'active' : '' }}" href="{{ route('services.index') }}">Услуги</a>
+                                    <ul>
+                                        @foreach($menuCategories as $category)
+                                            @include('partials.header-service-menu-item', ['category' => $category])
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('services.*') ? 'active' : '' }}" href="{{ route('services.index') }}">Услуги</a>
+                                </li>
+                            @endif
+
+                            {{-- Остальные пункты --}}
                             @foreach ($navItems as $item)
-                                @if (!empty($item['children']) && $item['children']->isNotEmpty())
-                                    <li class="nav-item submenu">
-                                        <a class="nav-link {{ $item['active'] ? 'active' : '' }}" href="{{ $item['route'] }}">{{ $item['label'] }}</a>
-                                        <ul>
-                                            @foreach ($item['children'] as $child)
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="{{ route('services.show', $child) }}">{{ $child->name }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                @else
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ $item['active'] ? 'active' : '' }}" href="{{ $item['route'] }}">{{ $item['label'] }}</a>
-                                    </li>
-                                @endif
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $item['active'] ? 'active' : '' }}" href="{{ $item['route'] }}">{{ $item['label'] }}</a>
+                                </li>
                             @endforeach
                         </ul>
                     </div>

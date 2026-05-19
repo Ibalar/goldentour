@@ -25,10 +25,12 @@ class Service extends Model
         'area_to',
         'duration',
         'image',
+        'breadcrumb_image',
         'gallery',
         'features',
         'is_active',
         'show_in_menu',
+        'show_on_home',
         'meta_title',
         'meta_description',
         'meta_keywords',
@@ -49,6 +51,10 @@ class Service extends Model
         // Блок FAQ
         'faq_title',
         'faq_items',
+        'pricing_title',
+        'pricing_subtitle',
+        'pricing_plans',
+        'pricing_features',
     ];
 
     protected $casts = [
@@ -60,11 +66,14 @@ class Service extends Model
         'gallery' => 'array',
         'is_active' => 'boolean',
         'show_in_menu' => 'boolean',
+        'show_on_home' => 'boolean',
         'why_choose_items' => 'array',
         'offer_list' => 'array',
         'offer_items' => 'array',
         'process_items' => 'array',
         'faq_items' => 'array',
+        'pricing_plans' => 'array',
+        'pricing_features' => 'array',
     ];
 
     public function category(): BelongsTo
@@ -95,5 +104,10 @@ class Service extends Model
     public function scopeShowInMenu($query)
     {
         return $query->where('show_in_menu', true);
+    }
+
+    public function scopeShowOnHome($query)
+    {
+        return $query->where('show_on_home', true);
     }
 }

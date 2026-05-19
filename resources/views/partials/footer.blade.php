@@ -28,7 +28,7 @@
                 <div class="col-xl-4">
                     <div class="about-footer">
                         <div class="footer-logo">
-                            <img src="{{ asset('assets/images/footer-logo.svg') }}" alt="Золотой Тур">
+                            <img src="{{ asset('assets/images/logo.svg') }}" alt="Золотой Тур">
                         </div>
 
                         <div class="footer-working-hours">
@@ -76,18 +76,12 @@
 
                 <div class="col-lg-12">
                     <div class="footer-copyright">
-                        <div class="footer-menu">
-                            <ul>
-                                <li><a href="{{ route('home') }}">Главная</a></li>
-                                <li><a href="{{ route('about') }}">О компании</a></li>
-                                <li><a href="{{ route('services.index') }}">Услуги</a></li>
-                                <li><a href="{{ route('portfolio.index') }}">Портфолио</a></li>
-                                <li><a href="{{ route('contacts') }}">Контакты</a></li>
-                            </ul>
+                        <div class="footer-copyright-text">
+                            <p>&copy; {{ date('Y') }} {{ \App\Models\Setting::get('company_name', 'Золотой Тур') }}. Все права защищены.</p>
                         </div>
 
                         <div class="footer-copyright-text">
-                            <p>&copy; {{ date('Y') }} {{ \App\Models\Setting::get('company_name', 'Золотой Тур') }}. Все права защищены.</p>
+                            <p>Разработка сайта <a href="https://webart.by" target="_blank">WebArt.BY</a> </p>
                         </div>
                     </div>
                 </div>

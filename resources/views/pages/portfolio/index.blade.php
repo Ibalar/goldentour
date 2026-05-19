@@ -22,81 +22,61 @@
         </div>
     </div>
 
-    <div class="page-gallery">
+    <div class="page-blog">
         <div class="container">
-            @if ($services->isNotEmpty())
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="section-footer-text" style="margin-bottom: 40px;">
-                            <p>
-                                <span>Направления</span>
-                                @foreach ($services as $index => $service)
-                                    <a href="{{ route('services.show', $service) }}">{{ $service->name }}</a>@if ($index < $services->count() - 1), @endif
-                                @endforeach
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if ($portfolio->isNotEmpty())
-                <div class="row gallery-items page-gallery-box">
-                    @foreach ($portfolio as $index => $item)
-                        @php
-                            $image = $item->thumbnail
-                                ? asset('storage/' . $item->thumbnail)
-                                : asset('assets/images/project-image-' . (($index % 6) + 1) . '.jpg');
-                        @endphp
-
-                        <div class="col-lg-4 col-6">
-                            <div class="photo-gallery wow fadeInUp" @if($index > 0) data-wow-delay="{{ number_format(min($index * 0.2, 1.6), 1) }}s" @endif>
-                                <a href="{{ route('portfolio.show', $item) }}" data-cursor-text="View">
-                                    <figure class="image-anime">
-                                        <img src="{{ $image }}" alt="{{ $item->title }}">
+            <div class="row">
+                @forelse ($portfolio as $index => $item)
+                    <div class="col-xl-4 col-md-6">
+                        <div class="post-item wow fadeInUp" @if($index > 0) data-wow-delay="{{ number_format(($index % 3) * 0.2, 1) }}s" @endif>
+                            <div class="post-featured-image">
+                                <a href="{{ route('portfolio.show', $item) }}" data-cursor-text="Смотреть">
+                                    <figure>
+                                        <img src="{{ $item->thumbnail ? asset('storage/' . $item->thumbnail) : asset('assets/images/project-image-' . (($index % 6) + 1) . '.jpg') }}" alt="{{ $item->title }}">
                                     </figure>
                                 </a>
+                            </div>
 
-                                <div class="project-item-content" style="padding: 24px 0 0;">
-                                    <div class="project-item-content-header">
-                                        <div class="project-item-title">
-                                            <h2><a href="{{ route('portfolio.show', $item) }}">{{ $item->title }}</a></h2>
-                                        </div>
-                                        <div class="project-item-btn">
-                                            <a href="{{ route('portfolio.show', $item) }}"><img src="{{ asset('assets/images/arrow-white.svg') }}" alt=""></a>
-                                        </div>
+                            @if($item->service)
+                                <div class="post-item-tags">
+                                    <a href="{{ route('services.show', $item->service) }}">{{ $item->service->name }}</a>
+                                </div>
+                            @endif
+
+                            <div class="post-item-body">
+                                <div class="post-content-box">
+                                    <div class="post-item-meta">
+                                        <ul>
+                                            @if($item->completion_date)
+                                                <li>{{ $item->completion_date->translatedFormat('F Y') }}</li>
+                                            @endif
+                                            @if($item->location)
+                                                <li>{{ $item->location }}</li>
+                                            @endif
+                                        </ul>
                                     </div>
-                                    <div class="project-item-content-body">
-                                        <div class="project-item-tags">
-                                            @if ($item->service)
-                                                <a href="{{ route('services.show', $item->service) }}">{{ $item->service->name }}</a>
-                                            @endif
-                                            @if ($item->location)
-                                                <a href="{{ route('portfolio.show', $item) }}">{{ $item->location }}</a>
-                                            @endif
-                                            @if ($item->completion_date)
-                                                <a href="{{ route('portfolio.show', $item) }}">{{ $item->completion_date->format('Y') }}</a>
-                                            @endif
-                                        </div>
+
+                                    <div class="post-item-content">
+                                        <h2><a href="{{ route('portfolio.show', $item) }}">{{ $item->title }}</a></h2>
                                     </div>
+                                </div>
+
+                                <div class="post-item-btn">
+                                    <a href="{{ route('portfolio.show', $item) }}" class="readmore-btn">Подробнее</a>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="section-footer-text">
-                            <p><span>Портфолио</span> Проекты пока не опубликованы. <a href="{{ route('contacts') }}">Свяжитесь с нами для примеров реализованных работ</a></p>
-                        </div>
                     </div>
-                </div>
-            @endif
+                @empty
+                    <div class="col-lg-12">
+                        <p class="text-center py-5">Проекты пока не опубликованы.</p>
+                    </div>
+                @endforelse
+            </div>
 
-            @if (method_exists($portfolio, 'links'))
+            @if(method_exists($portfolio, 'links'))
                 <div class="row">
                     <div class="col-lg-12">
-                        <div style="margin-top: 48px;">
+                        <div class="page-pagination wow fadeInUp">
                             {{ $portfolio->links() }}
                         </div>
                     </div>

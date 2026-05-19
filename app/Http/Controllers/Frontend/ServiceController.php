@@ -22,7 +22,7 @@ class ServiceController extends Controller
 
     public function show(Service $service): View
     {
-        $service->load(['category', 'reviews' => fn ($query) => $query->published()->verified()->latest()->take(3)]);
+        $service->load(['category.parent', 'reviews' => fn ($query) => $query->published()->verified()->latest()->take(3)]);
 
         $relatedServices = Service::active()
             ->where('category_id', $service->category_id)
@@ -39,9 +39,16 @@ class ServiceController extends Controller
         $category = ServiceCategory::query()
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->with(['activeServices' => fn ($query) => $query->orderBy('name')])
+            ->with(['parent', 'children'])
             ->firstOrFail();
 
-        return view('pages.services.category', compact('category'));
+        $categoryIds = $category->getAllDescendantIds();
+
+        $services = Service::active()
+            ->whereIn('category_id', $categoryIds)
+            ->orderBy('name')
+            ->get();
+
+        return view('pages.services.category', compact('category', 'services'));
     }
 }

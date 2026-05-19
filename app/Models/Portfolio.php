@@ -23,6 +23,7 @@ class Portfolio extends Model
         'location',
         'service_id',
         'thumbnail',
+        'gallery',
         'before_image',
         'after_image',
         'is_featured',
@@ -34,6 +35,7 @@ class Portfolio extends Model
     protected $casts = [
         'completion_date' => 'date',
         'area' => 'integer',
+        'gallery' => 'array',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
     ];

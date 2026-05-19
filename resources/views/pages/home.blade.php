@@ -209,16 +209,12 @@
             </div>
 
             <div class="row services-item-list">
-                @foreach ($services->take(4) as $index => $service)
+                @foreach ($services as $index => $service)
                     <div class="col-xl-3 col-md-6">
-                        <div class="service-item wow fadeInUp {{ $index === 0 ? 'active' : '' }}" @if($index > 0) data-wow-delay="{{ number_format($index * 0.2, 1) }}s" @endif>
+                        <div class="service-item wow fadeInUp {{ $index === 0 ? 'active' : '' }}" @if($index > 0) data-wow-delay="{{ number_format(($index % 4) * 0.2, 1) }}s" @endif>
                             <div class="service-item-header">
                                 <div class="service-item-title">
                                     <h2><a href="{{ route('services.show', $service) }}">{{ $service->name }}</a></h2>
-                                    <h3>{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}.</h3>
-                                </div>
-                                <div class="service-item-content">
-                                    <p>{{ \Illuminate\Support\Str::limit($service->short_description ?: 'Производственный цикл с понятным составом работ и сроками.', 90) }}</p>
                                 </div>
                             </div>
                             <div class="service-image-box">
@@ -237,6 +233,14 @@
                     </div>
                 @endforeach
             </div>
+
+            @if($servicesTotal > 8)
+                <div class="row">
+                    <div class="col-lg-12 text-center mt-4">
+                        <a href="{{ route('services.index') }}" class="btn-default">Смотреть все</a>
+                    </div>
+                </div>
+            @endif
 
             <div class="row">
                 <div class="col-lg-12">

@@ -13,11 +13,16 @@ use MoonShine\Contracts\Core\TypeCasts\DataWrapperContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
+use MoonShine\Laravel\Fields\Slug;
 use MoonShine\Laravel\Pages\Crud\FormPage;
+use MoonShine\TinyMce\Fields\TinyMce;
 use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Components\Layout\Column;
+use MoonShine\UI\Components\Layout\Grid;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\ID;
 use MoonShine\UI\Fields\Image;
+use MoonShine\UI\Fields\Json;
 use MoonShine\UI\Fields\Number;
 use MoonShine\UI\Fields\Switcher;
 use MoonShine\UI\Fields\Text;
@@ -36,13 +41,50 @@ class PortfolioFormPage extends FormPage
         return [
             Box::make([
                 ID::make(),
-                Text::make('Название', 'title')->required(),
-                Text::make('Slug', 'slug')->required(),
-                Textarea::make('Описание', 'description')->nullable(),
-                Text::make('Клиент', 'client_name')->nullable(),
-                Date::make('Дата завершения', 'completion_date')->nullable(),
-                Number::make('Площадь', 'area')->nullable(),
-                Text::make('Локация', 'location')->nullable(),
+
+                Grid::make([
+                    Column::make([
+                        Text::make('Название', 'title')
+                            ->when(
+                                fn () => $this->getResource()->isCreateFormPage(),
+                                fn (Text $field) => $field->reactive(),
+                                fn (Text $field) => $field
+                            )
+                            ->required(),
+                    ], colSpan: 6),
+
+                    Column::make([
+                        Slug::make('Slug', 'slug')
+                            ->unique()
+                            ->locked()
+                            ->when(
+                                fn () => $this->getResource()->isCreateFormPage(),
+                                fn (Slug $field) => $field->from('title')->live(),
+                                fn (Slug $field) => $field->readonly()
+                            ),
+                    ], colSpan: 6),
+                ]),
+
+                TinyMce::make('Описание', 'description')->nullable(),
+
+                Grid::make([
+                    Column::make([
+                        Text::make('Клиент', 'client_name')->nullable(),
+                    ], colSpan: 6),
+                    Column::make([
+                        Date::make('Дата завершения', 'completion_date')->nullable(),
+                    ], colSpan: 6),
+                ]),
+
+                Grid::make([
+                    Column::make([
+                        Number::make('Площадь', 'area')->nullable(),
+                    ], colSpan: 6),
+                    Column::make([
+                        Text::make('Локация', 'location')->nullable(),
+                    ], colSpan: 6),
+                ]),
+
                 BelongsTo::make(
                     'Услуга',
                     'service',
@@ -51,23 +93,52 @@ class PortfolioFormPage extends FormPage
                 )
                     ->nullable()
                     ->valuesQuery(static fn (Builder $q): Builder => $q->select(['id', 'name'])),
-                Image::make('Превью', 'thumbnail')
-                    ->disk(moonshineConfig()->getDisk())
-                    ->dir('portfolio')
-                    ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+
+                Grid::make([
+                    Column::make([
+                        Image::make('Превью', 'thumbnail')
+                            ->disk(moonshineConfig()->getDisk())
+                            ->dir('portfolio')
+                            ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                            ->nullable(),
+                    ], colSpan: 4),
+                    Column::make([
+                        Image::make('Фото до', 'before_image')
+                            ->disk(moonshineConfig()->getDisk())
+                            ->dir('portfolio')
+                            ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                            ->nullable(),
+                    ], colSpan: 4),
+                    Column::make([
+                        Image::make('Фото после', 'after_image')
+                            ->disk(moonshineConfig()->getDisk())
+                            ->dir('portfolio')
+                            ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                            ->nullable(),
+                    ], colSpan: 4),
+                ]),
+
+                Json::make('Галерея', 'gallery')
+                    ->fields([
+                        Image::make('Изображение', 'image')
+                            ->disk(moonshineConfig()->getDisk())
+                            ->dir('portfolio/gallery')
+                            ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                            ->nullable(),
+                        Text::make('Подпись', 'caption')->nullable(),
+                    ])
+                    ->creatable()
+                    ->removable()
+                    ->vertical()
                     ->nullable(),
-                Image::make('Фото до', 'before_image')
-                    ->disk(moonshineConfig()->getDisk())
-                    ->dir('portfolio')
-                    ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
-                    ->nullable(),
-                Image::make('Фото после', 'after_image')
-                    ->disk(moonshineConfig()->getDisk())
-                    ->dir('portfolio')
-                    ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
-                    ->nullable(),
-                Switcher::make('Рекомендуемое', 'is_featured')->default(false),
-                Switcher::make('Активно', 'is_active')->default(true),
+
+                Grid::make([
+                    Column::make([
+                        Switcher::make('Рекомендуемое', 'is_featured')->default(false),
+                        Switcher::make('Активно', 'is_active')->default(true),
+                    ], colSpan: 12),
+                ]),
+
                 Text::make('Meta title', 'meta_title')->nullable(),
                 Textarea::make('Meta description', 'meta_description')->nullable(),
             ]),
@@ -93,6 +164,7 @@ class PortfolioFormPage extends FormPage
             'thumbnail' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
             'before_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
             'after_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
+            'gallery' => ['nullable', 'array'],
             'is_featured' => ['boolean'],
             'is_active' => ['boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],

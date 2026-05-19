@@ -66,7 +66,7 @@
                     'Снижение рисков переделок и срывов',
                 ],
                 'image' => 'assets/images/feature-item-image-2.png',
-                'box' => 'box-2',
+                'box' => 'box-1',
             ],
         ];
 

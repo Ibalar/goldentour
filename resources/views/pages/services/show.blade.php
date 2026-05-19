@@ -101,7 +101,15 @@
         $displayFaqItems = $faqItems->isNotEmpty() ? $faqItems : $defaultFaqItems;
     @endphp
 
-    <div class="page-header parallaxie" style="background-image: url('{{ asset('assets/images/page-header-bg.jpg') }}');">
+    @php
+        $bgImage = match(true) {
+            $service->breadcrumb_image !== null => asset('storage/' . $service->breadcrumb_image),
+            $service->category?->breadcrumb_image !== null => asset('storage/' . $service->category->breadcrumb_image),
+            $service->category?->parent?->breadcrumb_image !== null => asset('storage/' . $service->category->parent->breadcrumb_image),
+            default => asset('assets/images/page-header-bg.jpg'),
+        };
+    @endphp
+    <div class="page-header parallaxie" style="background-image: url('{{ $bgImage }}');">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -125,18 +133,17 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="service-single-content">
-                        <div class="page-single-image">
-                            <figure class="image-anime reveal">
-                                <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('assets/images/service-image-1.jpg') }}" alt="{{ $service->name }}">
-                            </figure>
-                        </div>
 
                         <div class="service-entry">
                             @if ($service->short_description)
                                 <p class="wow fadeInUp">{{ $service->short_description }}</p>
                             @endif
 
-                            <p class="wow fadeInUp">Услуга адаптируется под тип объекта, текущий этап и формат участия команды. До старта фиксируем состав работ, последовательность действий, ориентир по срокам и ключевые контрольные точки.</p>
+                            @if ($service->full_description)
+                                <div class="content-block wow fadeInUp">
+                                    {!! $service->full_description !!}
+                                </div>
+                            @endif
 
                             {{-- Блок "Почему выбирают эту услугу" --}}
                             @if($whyChooseItems->isNotEmpty() || $service->why_choose_title)
@@ -144,8 +151,6 @@
                                     <h2 class="text-anime-style-3">{{ $service->why_choose_title ?? 'Почему выбирают эту услугу' }}</h2>
                                     @if($service->why_choose_subtitle)
                                         <p class="wow fadeInUp">{{ $service->why_choose_subtitle }}</p>
-                                    @else
-                                        <p class="wow fadeInUp">Мы не ограничиваемся одной операцией. Смотрим на задачу как на часть всего проекта, поэтому заранее учитываем смету, организацию работ, материалы и реальные ограничения объекта.</p>
                                     @endif
 
                                     @if($whyChooseItems->isNotEmpty())
@@ -161,7 +166,7 @@
                                                     </div>
                                                     <div class="service-why-choose-item-content">
                                                         <h3>{{ $item['title'] ?? \Illuminate\Support\Str::limit($item['description'] ?? '', 38) }}</h3>
-                                                        <p>{{ $item['description'] ?? '' }}</p>
+                                                        <p>{!! $item['description'] ?? '' !!}</p>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -277,11 +282,7 @@
                                 </div>
                             @endif
 
-                            @if ($service->full_description)
-                                <div class="content-block wow fadeInUp">
-                                    {!! $service->full_description !!}
-                                </div>
-                            @endif
+
                         </div>
 
                         {{-- Блок FAQ "Что еще важно знать" --}}
@@ -300,7 +301,7 @@
                                         </h2>
                                         <div id="service-collapse-{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}" aria-labelledby="service-heading-{{ $index }}" data-bs-parent="#service-accordion">
                                             <div class="accordion-body">
-                                                <p>{{ $faq['answer'] ?? $faq['a'] ?? '' }}</p>
+                                                <p>{!! $faq['answer'] ?? $faq['a'] ?? '' !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -323,7 +324,7 @@
 
                         <div class="sidebar-cta-box wow fadeInUp" data-wow-delay="0.25s">
                             <div class="sidebar-cta-title">
-                                <h3>Нужна помощь по проекту?</h3>
+                                <h3>Нужна помощь или консультация?</h3>
                             </div>
 
                             <div class="sidebar-cta-body">
@@ -335,25 +336,185 @@
                                 </div>
                                 <div class="sidebar-cta-body-image">
                                     <figure>
-                                        <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('assets/images/service-image-1.jpg') }}" alt="{{ $service->name }}">
+                                        <img src="{{ asset('assets/images/sidebar-body-image.png') }}" alt="{{ $service->name }}">
                                     </figure>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="sidebar-cta-box wow fadeInUp" data-wow-delay="0.35s">
-                            <div class="sidebar-cta-title">
-                                <h3>Быстрая заявка</h3>
-                            </div>
-                            <div class="sidebar-cta-body">
-                                <div class="w-100">
-                                    <x-lead-form :service="$service" prefix="service-sidebar" source="service_page" />
-                                </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Блок тарифных планов --}}
+    @php
+        $pricingPlans = collect($service->pricing_plans ?: [])->filter()->values();
+        $pricingFeatures = collect($service->pricing_features ?: [])->filter()->values();
+    @endphp
+
+    @if($pricingPlans->isNotEmpty() && $pricingFeatures->isNotEmpty())
+        <div class="page-pricing">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="section-title section-title-center">
+                            <h2 class="text-anime-style-3">{{ $service->pricing_title ?? 'Виды работ' }}</h2>
+                            @if($service->pricing_subtitle)
+                                <p class="wow fadeInUp">{{ $service->pricing_subtitle }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="pricing-table-wrapper wow fadeInUp">
+                            <div class="table-responsive">
+                                <table class="table pricing-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 300px;">{{ $service->pricing_title ?? 'Виды работ' }}</th>
+                                            @foreach($pricingPlans as $plan)
+                                                <th class="text-center {{ !empty($plan['highlighted']) ? 'highlighted' : '' }}" style="min-width: 200px;">
+                                                    <div class="pricing-header">
+                                                        <h4>{{ $plan['name'] ?? '' }}</h4>
+                                                        @if(!empty($plan['price']))
+                                                            <span class="pricing-price">{{ $plan['price'] }}</span>
+                                                        @endif
+                                                    </div>
+                                                </th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($pricingFeatures as $feature)
+                                            <tr>
+                                                <td class="feature-name">{{ $feature['name'] ?? '' }}</td>
+                                                @php $featureValues = collect($feature['values'] ?? [])->values(); @endphp
+                                                @foreach($pricingPlans as $planIndex => $plan)
+                                                    @php
+                                                        $value = $featureValues->get($planIndex, '-');
+                                                    @endphp
+                                                    <td class="text-center {{ !empty($plan['highlighted']) ? 'highlighted' : '' }}">
+                                                        @if($value === '+' || $value === 'да' || $value === 'yes')
+                                                            <i class="fa-solid fa-check text-success"></i>
+                                                        @elseif($value === '-' || $value === 'нет' || $value === 'no')
+                                                            <i class="fa-solid fa-minus text-muted"></i>
+                                                        @else
+                                                            {{ $value }}
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 @endsection
+
+@push('styles')
+<style>
+.page-pricing {
+    padding: 100px 0;
+    background: #f8f9fa;
+}
+
+.pricing-table-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.pricing-table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.pricing-table thead th {
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: 600;
+    padding: 24px 16px;
+    border: none;
+    vertical-align: middle;
+}
+
+.pricing-table thead th:first-child {
+    background: #1a1a1a;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+.pricing-table thead th.highlighted {
+    background: #c9a962;
+}
+
+.pricing-header h4 {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.pricing-price {
+    display: block;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9rem;
+}
+
+.pricing-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.pricing-table tbody td {
+    padding: 16px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.pricing-table tbody td.feature-name {
+    font-weight: 500;
+    text-align: left;
+    color: #333;
+}
+
+.pricing-table tbody td.highlighted {
+    background: rgba(201, 169, 98, 0.08);
+}
+
+.pricing-table tbody td .fa-check {
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+.pricing-table tbody td .fa-minus {
+    color: #adb5bd;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 991px) {
+    .page-pricing {
+        padding: 60px 0;
+    }
+    .pricing-table thead th,
+    .pricing-table tbody td {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+}
+</style>
+@endpush

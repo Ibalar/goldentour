@@ -44,10 +44,6 @@
                                 <div class="service-item-header">
                                     <div class="service-item-title">
                                         <h2><a href="{{ route('services.show', $service) }}">{{ $service->name }}</a></h2>
-                                        <h3>{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}.</h3>
-                                    </div>
-                                    <div class="service-item-content">
-                                        <p>{{ \Illuminate\Support\Str::limit($service->short_description ?: ($service->category?->name ?: 'Комплексная услуга под ключ'), 92) }}</p>
                                     </div>
                                 </div>
                                 <div class="service-image-box">
@@ -86,11 +82,11 @@
                         <div class="section-title">
                             <h3 class="wow fadeInUp">Как мы работаем</h3>
                             <h2 class="text-anime-style-3" data-cursor="-opaque">Подбираем решение под задачу, бюджет и этап проекта, а не продаем одну и ту же схему всем подряд</h2>
-                            <p class="wow fadeInUp" data-wow-delay="0.2s">В каталоге {{ $serviceCount }} услуг и {{ $categories->count() }} категорий. Поможем определить состав работ, порядок запуска и ориентир по стоимости до старта.</p>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">Поможем определить состав работ, порядок запуска и ориентир по стоимости до старта.</p>
                         </div>
 
                         <div class="watch-video-circle">
-                            <a href="{{ route('calculator') }}" data-cursor-text="Start">
+                            <a href="{{ route('calculator') }}" data-cursor-text="Рассчитать">
                                 <img src="{{ asset('assets/images/watch-video-circle.svg') }}" alt="">
                             </a>
                         </div>

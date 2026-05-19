@@ -16,6 +16,7 @@ use MoonShine\Laravel\Fields\Slug;
 use MoonShine\Laravel\Pages\Crud\FormPage;
 use MoonShine\UI\Components\Layout\Box;
 use MoonShine\UI\Fields\ID;
+use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Number;
 use MoonShine\UI\Fields\Switcher;
 use MoonShine\UI\Fields\Text;
@@ -61,6 +62,11 @@ class ServiceCategoryFormPage extends FormPage
                 Text::make('Иконка', 'icon')->nullable(),
                 Number::make('Сортировка', 'sort_order')->default(0)->required(),
                 Switcher::make('Активна', 'is_active')->default(true),
+                Image::make('Фон хлебных крошек', 'breadcrumb_image')
+                    ->disk(moonshineConfig()->getDisk())
+                    ->dir('categories')
+                    ->allowedExtensions(['jpg', 'jpeg', 'png', 'webp'])
+                    ->nullable(),
             ]),
         ];
     }
@@ -80,6 +86,7 @@ class ServiceCategoryFormPage extends FormPage
             'icon' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'is_active' => ['boolean'],
+            'breadcrumb_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,webp'],
         ];
     }
 }
