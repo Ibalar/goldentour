@@ -92,7 +92,7 @@ export default function calculatorComponent({ services = [], selectedService = '
         },
 
         get formattedTotalPrice() {
-            return `${formatPrice(this.totalPrice)} ₽`;
+            return `${formatPrice(this.totalPrice)} BYN`;
         },
     };
 }

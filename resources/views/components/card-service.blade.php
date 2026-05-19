@@ -13,7 +13,7 @@
 
             @if ($service->price_from)
                 <div class="absolute bottom-4 right-4 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-secondary-900 shadow-lg">
-                    от {{ number_format((float) $service->price_from, 0, ',', ' ') }} ₽
+                    от {{ number_format((float) $service->price_from, 0, ',', ' ') }} BYN
                 </div>
             @endif
         </div>

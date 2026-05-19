@@ -20,7 +20,7 @@
         'offers' => [
             '@type' => 'Offer',
             'price' => (string) ($service->price_from ?? 0),
-            'priceCurrency' => 'RUB',
+            'priceCurrency' => 'BYN',
         ],
     ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
     </script>

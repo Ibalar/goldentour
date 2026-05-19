@@ -42,7 +42,7 @@ class LeadCreatedNotification extends Notification
         }
 
         if ($this->lead->calculated_price) {
-            $message->line('Рассчитанная цена: ' . number_format((float) $this->lead->calculated_price, 0, ',', ' ') . ' ₽');
+            $message->line('Рассчитанная цена: ' . number_format((float) $this->lead->calculated_price, 0, ',', ' ') . ' BYN');
         }
 
         $message->line('Источник: ' . match ($this->lead->source) {

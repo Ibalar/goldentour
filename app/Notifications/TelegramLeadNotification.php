@@ -38,7 +38,7 @@ class TelegramLeadNotification extends Notification
 
         if ($this->lead->calculated_price) {
             $price = number_format((float) $this->lead->calculated_price, 0, ',', ' ');
-            $text .= "*Расчет:* {$price} ₽\n";
+            $text .= "*Расчет:* {$price} BYN\n";
         }
 
         $text .= '*Источник:* ' . match ($this->lead->source) {
